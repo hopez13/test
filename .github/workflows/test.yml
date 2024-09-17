@@ -1,0 +1,32 @@
+name: run
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Update tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y aria2
+      - uses: actions/checkout@main
+      - name: Download archive file
+        run: aria2c -x 16 -s 16 --file-allocation=none -i d.txt
+      - name: Delete files larger than 2MB from .tgz archive
+        run: |
+          mkdir temp
+          tar -zxf d.tgz -C temp
+          find temp -type f -size +2M -delete
+          tar -czf d2.tgz -C temp .
+          rm -rf temp
+      - name: Upload modified .tgz archive
+        uses: actions/upload-artifact@main
+        with:
+          name: archive
+          path: d2.tgz
+          
