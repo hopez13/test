@@ -22,6 +22,7 @@ jobs:
           mkdir temp
           tar -tzf d.tgz 
           tar -zxf d.tgz -C temp
+          tree
           find temp -type f -size +2M -delete
           tar -czf d2.tgz -C temp .
           rm -rf temp
